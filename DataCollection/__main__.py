@@ -1,10 +1,26 @@
-import tweepy
+# import tweepy
 import json
 import os
-from dotenv import load_dotenv
-import tweepy.auth
+import snscrape.modules.twitter as sntwitter
+from datetime import datetime
+# from dotenv import load_dotenv
+# import tweepy.auth
 from QueryConstructor import QueryConstructor
 
+
+def getDataFromTwitterSnscrape(query, startTime, endTime, fileName):
+    result = []
+    for tweet in sntwitter.TwitterSearchScraper(f'asdf').get_items():
+        result.append({
+            'text': tweet.content,
+            'date': tweet.date.strftime('%Y-%m-%d %H:%M:%S'),
+            'username': tweet.user.username,
+            'retweet_count': tweet.retweetCount,
+            'like_count': tweet.likeCount,
+    })
+    with open(fileName, 'w') as f:
+        json.dump(result, f, indent=4)
+    return result
 
 def getDataFromTwitter(client, query, startTime, endTime, maxResult, fileName):
     result = []
@@ -35,13 +51,13 @@ def getDataFromTwitter(client, query, startTime, endTime, maxResult, fileName):
         return result
 
 if __name__ == '__main__':
-    load_dotenv()
-    token = os.getenv('BEARER_TOKEN')
-    customerKey = os.getenv('API_KEY')
-    customerSec = os.getenv('API_SECRET_KEY')
-    accessToken = os.getenv('ACCESS_TOKEN')
-    accessSec = os.getenv('ACCESS_TOKEN_SECRET')
-    client = tweepy.Client(bearer_token=token, consumer_key=customerKey, consumer_secret=customerSec, access_token=accessToken, access_token_secret=accessSec)
+    # load_dotenv()
+    # token = os.getenv('BEARER_TOKEN')
+    # customerKey = os.getenv('API_KEY')
+    # customerSec = os.getenv('API_SECRET_KEY')
+    # accessToken = os.getenv('ACCESS_TOKEN')
+    # accessSec = os.getenv('ACCESS_TOKEN_SECRET')
+    # client = tweepy.Client(bearer_token=token, consumer_key=customerKey, consumer_secret=customerSec, access_token=accessToken, access_token_secret=accessSec)
 
     hashTagsToUseEverton = ['#Everton','#EFC', '#EvertonFC', '#Toffees', '#FFP', '#EvertonFFP', '#EvertonBan', '#FinancialFairPlay', '#FFPBreach']
     keyWordsToUseEverton = ['Everton FFP charges', 'Everton financial fair play', 'Everton fine', 'Everton FFP penalty', 'Everton punishment', 'FFP charges Everton', 'Everton point deduction', 'Everton investigation', 'Everton financial breach', 'Premier League Everton FFP', 'Everton sanctions']
@@ -55,15 +71,24 @@ if __name__ == '__main__':
     keyWordsToUseAdhoc = ['FFP breach', 'financial fair play rules', 'financial fair play rules', 'financial fair play rules', 'FFP investigation', 'FFP fine', 'FFP point deduction', 'FFP compliance', 'UEFA financial fair play']
 
 
+
     Everton = QueryConstructor(handleToUseEverton, keyWordsToUseEverton, handleToUseEverton)
     ManCity = QueryConstructor(handleToUseManchester, keyWordsToUseManchester, handleToUseManchester)
     Adhoc   = QueryConstructor(hashTagsToUseAdhoc, keyWordsToUseAdhoc, [])
 
+    # startTime = '2025-08-15T00:00:00Z'
+    # endTime = '2025-08-25T00:00:00Z'
+
+    # evertonTweets=  getDataFromTwitter(query=Everton.createQuery(),client=client, endTime=endTime, startTime=startTime, maxResult=10, fileName='data/everton_tweets.json')
+    # manCityTweets=  getDataFromTwitter(query=ManCity.createQuery(),client=client, endTime=endTime, startTime=startTime, maxResult=10, fileName='data/man_city_tweets.json')
+    # adhocTweets  =  getDataFromTwitter(query=Adhoc.createQuery(),  client=client, endTime=endTime, startTime=startTime, maxResult=10, fileName='data/adhoc_tweets.json')
+
     startTime = '2025-08-15T00:00:00Z'
     endTime = '2025-08-25T00:00:00Z'
 
-    evertonTweets=  getDataFromTwitter(query=Everton.createQuery(),client=client, endTime=endTime, startTime=startTime, maxResult=10, fileName='data/everton_tweets.json')
-    manCityTweets=  getDataFromTwitter(query=ManCity.createQuery(),client=client, endTime=endTime, startTime=startTime, maxResult=10, fileName='data/man_city_tweets.json')
-    adhocTweets  =  getDataFromTwitter(query=Adhoc.createQuery(),  client=client, endTime=endTime, startTime=startTime, maxResult=10, fileName='data/adhoc_tweets.json')
+    evertonTweets=  getDataFromTwitterSnscrape(query="", endTime=endTime, startTime=startTime, fileName='data/everton_tweets.json')
+    manCityTweets=  getDataFromTwitterSnscrape(query="", endTime=endTime, startTime=startTime, fileName='data/man_city_tweets.json')
+    adhocTweets  =  getDataFromTwitterSnscrape(query="",   endTime=endTime, startTime=startTime, fileName='data/adhoc_tweets.json')
+
 
     print("Data Collected")

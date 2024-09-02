@@ -17,7 +17,8 @@ def analyzeArrayOfTweets(tweets, fileName):
             'compound': score['compound'],
             'positive': score['pos'],
             'neutral': score['neu'],
-            'negative': score['neg']      
+            'negative': score['neg'],
+            'date': tweet['date']
         })
     with open(f'analysisResult/{fileName}', 'w') as file:
         json.dump(result, file, indent=4)

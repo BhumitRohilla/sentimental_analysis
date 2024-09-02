@@ -23,8 +23,9 @@ data.forEach((element) => {
         data['quote'] = result.quote_count;
         data['retweet'] = result.retweet_count;
         data['view'] = element.content.itemContent.tweet_results.result.views.count
-
-        parsedData.push(data);
+        if (data['lang'] === 'en') {
+            parsedData.push(data);
+        }
     }
 })
 

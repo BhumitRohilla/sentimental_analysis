@@ -8,15 +8,11 @@ def legend(pct, allvalues):
     absolute = int(pct / 100.*sum(allvalues))
     return f'{absolute} ({pct:.1f}%)'
 
-    
-if __name__ == '__main__':
-    result = []
-    with open('analysisResult/finalData.json') as file:
-        result = json.load(file)
+
+def analyse(result, name):
 
     positive_threshold = 0.1
     negative_threshold = -0.1
-
     positive_count = 0
     negative_count = 0
     neutral_count = 0
@@ -39,7 +35,7 @@ if __name__ == '__main__':
     ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
 
     # Save the pie chart to a PDF file
-    pyplot.savefig('sentiment_distribution_pie_chart.pdf', format='pdf')
+    pyplot.savefig(f'sentiment_distribution_{name}_pie_chart.pdf', format='pdf')
 
 
     my_dict = {}
@@ -85,7 +81,7 @@ if __name__ == '__main__':
     date_data_frame = date_data_frame.set_index('date').reindex(date_range).fillna(0).reset_index()
 
     date_data_frame.rename(columns={'index': 'date'}, inplace=True)
-    # Display the DataFrame
+
     print(date_data_frame)
 
     pyplot.figure(figsize=(20, 6))
@@ -100,6 +96,38 @@ if __name__ == '__main__':
     pyplot.grid(True)
 
     # Save the plot to a PDF file
-    pyplot.savefig('sentiment_trends_line_graph.pdf', format='pdf')
+    pyplot.savefig(f'sentiment_trends_{name}_line_graph.pdf', format='pdf')
 
-    pyplot.show()
+
+if __name__ == '__main__':
+    result = []
+    with open('analysisResult/finalData.json') as file:
+        result = json.load(file)
+
+    analyse(result=result, name="total")
+
+
+    everton_tweets = []
+    hashTagsToUseEverton = ['#Everton','#EFC', '#EvertonFC', '#Toffees', '#FFP', '#EvertonFFP', '#EvertonBan', '#FinancialFairPlay', '#FFPBreach']
+ 
+    print("Working")
+
+    for element in result:
+        contains_hashtag = any(tag in element["tweet"] for tag in hashTagsToUseEverton)
+        if contains_hashtag == True:
+            everton_tweets.append(element)
+
+    
+    analyse(everton_tweets, name="everton")
+
+
+    manchester_tweets = []
+    hashTagsToUseManchester = ['#MCFC', '#ManCity', '#ManchesterCity', '#Cityzens', '#FFP', '#ManCityFFP', '#FFPBreach', '#FinancialFairPlay', '#ManCityFine']
+    for element in result:
+        contains_hashtag = any(tag in element["tweet"] for tag in hashTagsToUseManchester)
+        if contains_hashtag == True:
+            manchester_tweets.append(element)
+
+    analyse(manchester_tweets, name="manchester")
+
+
